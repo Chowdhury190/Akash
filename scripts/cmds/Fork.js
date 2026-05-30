@@ -2,7 +2,7 @@ module.exports = {
   config: {
     name: "fork",
     version: "1.4",
-    author: "〲MAMUNツ࿐ T.T　o.O",
+    author: "〲AKASHツ࿐ T.T　o.O",
     countDown: 2,
     role: 0,
     shortDescription: "Show official fork link with owner info",
