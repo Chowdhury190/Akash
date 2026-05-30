@@ -2,7 +2,7 @@ module.exports = {
   config: {
     name: "adminmention",
     version: "1.3.2",
-    author: "〲MAMUNツ࿐ T.T　o.O",
+    author: "〲AKASHツ࿐ T.T　o.O",
     countDown: 0,
     role: 0,
     shortDescription: "Replies angrily when someone tags admins",
