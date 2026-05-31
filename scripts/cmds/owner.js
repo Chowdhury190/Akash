@@ -6,7 +6,7 @@ module.exports = {
   config: {
     name: "owner",
     version: "1.3.0",
-    author: "亗AKASH✿᭄",
+    author: "〲MAMUNツ࿐",
     role: 0,
     shortDescription: "Owner information with image",
     category: "Information",
@@ -16,7 +16,7 @@ module.exports = {
   },
 
   onStart: async function ({ api, event }) {
-    const ownerText = 
+    const ownerText =
 `╭─ 👑 Oᴡɴᴇʀ Iɴғᴏ 👑 ─╮
 │ 👤 Nᴀᴍᴇ       : 亗 AKASH ✿᭄
 │🧸 Nɪᴄᴋ       : Vondo
@@ -36,7 +36,7 @@ module.exports = {
 
     if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
 
-    const imgLink = "";https://i.imgur.com/g0GpgfG.jpeg
+    const imgLink = "https://i.imgur.com/g0GpgfG.jpeg";
 
     const send = () => {
       api.sendMessage(
