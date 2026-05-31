@@ -4,10 +4,10 @@ module.exports = {
           version: "1.0.4",
               author: "〲Ａｋａｓｈツ࿐ T.T　o.O",
                   role: 0,
-                      shortDescription: "Mamun Profile ",
+                      shortDescription: Akash" Profile ",
                           category: "Information",
                               guide: {
-                                    en: "type mamun"
+                                    en: "type Akash"
                                         }
                                           },
   onStart: async function () {},
