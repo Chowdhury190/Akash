@@ -1,8 +1,8 @@
 module.exports = {
   config: {
-      name: "mamun",
+      name: "Ａｋａｓｈ",
           version: "1.0.4",
-              author: "〲MAMUNツ࿐ T.T　o.O",
+              author: "〲Ａｋａｓｈツ࿐ T.T　o.O",
                   role: 0,
                       shortDescription: "Mamun Profile ",
                           category: "Information",
@@ -13,19 +13,19 @@ module.exports = {
   onStart: async function () {},
   onChat: async function ({ api, event }) {
       const msg = event.body?.toLowerCase();
-          if (!msg || msg !== "mamun") return;
+          if (!msg || msg !== "Akash") return;
     const profileText = 
-    `⏤͟͟͞͞𝗠𝗔𝗠𝗨𝗡  𝗜𝗡𝗙𝗢 ☺︎
+    `⏤͟͟͞͞♛ Ａｋａｓｈ Ｉｎｆｏ ♛ ☺︎
  ⏤͟͟͞͞☺︎ ┏━━━━━━━━━━━━━━━
- ⏤͟͟͞͞𝐍𝐚𝐦𝐞 ➯ 𝑴𝑨𝑴𝑼𝑵  ⏤͟͟͞͞ ᜊ
+ ⏤͟͟͞͞𝐍𝐚𝐦𝐞 ➯   ⏤͟͟͞͞ ᜊＡｋａｓｈ
  
 ⏤͟͟͞͞𝐍𝐢𝐜𝐤𝐧𝐚𝐦𝐞 ➯⏤͟͟͞͞ 𝐕𝐎𝐍𝐃𝐎 😜
 
 ⏤͟͟͞͞𝐂𝐨𝐮𝐧𝐭𝐫𝐲 ➯⏤͟͟͞͞𝐁𝐚𝐧𝐠𝐥𝐚𝐝𝐞𝐬𝐡 🇧🇩
 
-🏤⏤͟͟͞͞𝐇𝐨𝐦𝐞 ➯⏤͟͟͞͞𝐊𝐡𝐮𝐥𝐧𝐚   ☠️
+🏤⏤͟͟͞͞𝐇𝐨𝐦𝐞 ➯⏤͟͟͞͞  𝘿𝙝𝙖𝙠𝙖(⸝⸝๑﹏๑⸝⸝)  ☠️
 
-🏛️⏤͟͟͞͞𝐃𝐢𝐬𝐭𝐫𝐢𝐜𝐭 ➯⏤͟͟͞͞𝐊𝐇𝐔𝐋𝐍𝐀 💀
+🏛️⏤͟͟͞͞𝐃𝐢𝐬𝐭𝐫𝐢𝐜𝐭 ➯⏤͟͟͞͞ 💀𝘿𝙝𝙖𝙠𝙖
 
 ⛪⏤͟͟͞͞𝐄𝐝𝐮𝐜𝐚𝐭𝐢𝐨𝐧 ➯ 𝐈𝐧𝐭𝐞𝐫 2𝐧𝐝 𝐘𝐞𝐚𝐫 ✍︎❤️‍🩹
 
