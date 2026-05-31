@@ -19,7 +19,7 @@ module.exports = {
     const ownerText =
 `╭─ 👑 Oᴡɴᴇʀ Iɴғᴏ 👑 ─╮
 │ 👤 Nᴀᴍᴇ       : 亗 AKASH ✿᭄
-│🧸 Nɪᴄᴋ       : Vondo
+│ 🧸 Nɪᴄᴋ       : Vondo
 │ 🎂 Aɢᴇ        : 19
 │ 💘 Rᴇʟᴀᴛɪᴏɴ : Sɪɴɢʟᴇ
 │ 🎓 Pʀᴏғᴇssɪᴏɴ : Sᴛᴜᴅᴇɴᴛ
@@ -27,31 +27,41 @@ module.exports = {
 │ 🏡 Lᴏᴄᴀᴛɪᴏɴ : Dhaka  
 ├─ 🔗 Cᴏɴᴛᴀᴄᴛ ─╮
 │ 📘 Facebook  : https://www.facebook.com/share/171Y441F7H/
-│ 💬 Messenger: m.me/61558931578859
-│ 📞 WhatsApp  : wa.me/01994046054
+│ 💬 Messenger  : m.me/61558931578859
+│ 📞 WhatsApp   : wa.me/01994046054
 ╰────────────────╯`;
 
     const cacheDir = path.join(__dirname, "cache");
     const imgPath = path.join(cacheDir, "owner.jpg");
 
-    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
+    // cache folder safe create
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
 
-    const imgLink = "https://i.imgur.com/g0GpgfG.jpeg";
+    const imgLink = "https://i.imgur.com/rQWMrcH.jpeg";
 
     const send = () => {
-      api.sendMessage(
-        {
-          body: ownerText,
-          attachment: fs.createReadStream(imgPath)
-        },
-        event.threadID,
-        () => fs.unlinkSync(imgPath),
-        event.messageID
-      );
+      try {
+        api.sendMessage(
+          {
+            body: ownerText,
+            attachment: fs.createReadStream(imgPath)
+          },
+          event.threadID,
+          () => fs.unlinkSync(imgPath),
+          event.messageID
+        );
+      } catch (e) {
+        api.sendMessage(ownerText, event.threadID);
+      }
     };
 
-    request(encodeURI(imgLink))
+    request(imgLink)
       .pipe(fs.createWriteStream(imgPath))
-      .on("close", send);
+      .on("close", send)
+      .on("error", () => {
+        api.sendMessage(ownerText, event.threadID);
+      });
   }
 };
