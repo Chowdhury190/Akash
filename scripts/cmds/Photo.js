@@ -7,7 +7,7 @@ module.exports = {
   config: {
     name: "photo",
     version: "2.0.0",
-    author: "〲MAMUNツ࿐",
+    author: "〲Akashツ࿐",
     countDown: 5,
     role: 0,
     shortDescription: "Ephoto360 text maker",
@@ -29,7 +29,7 @@ module.exports = {
 │ photo <id> <text>
 │
 │ Example:
-│ photo 1 Mamun
+│ photo 1 Akash
 ╰─────────────`,
         event.threadID,
         event.messageID
