@@ -155,6 +155,6 @@
   },
   "noPrefix": {
     "enable": false,
-    "notes": "true = only bot admins can use commands without prefix | false = everyone must use prefix"
+    "notes": "true = only bot admins can use commands without prefix | true = everyone must use prefix"
   }
 }
