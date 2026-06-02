@@ -4,9 +4,9 @@ const moment = require("moment-timezone");
 module.exports = {
   config: {
     name: "info",
-    aliases: ["admininfo", "botinfo", "mamun", "ownerinfo"],
+    aliases: ["admininfo", "botinfo", "Akash", "ownerinfo"],
     version: "1.4",
-    author: "亗🅼🅰ᥫᩣ🅼ᥫᩣ🆄🅽×͜×",
+    author: "亗𝐀𝐊𝐀𝐒𝐇 𝐂𝐇𝐎𝐖𝐃𝐇𝐔𝐑𝐘×͜×",
     countDown: 5,
     role: 0,
     shortDescription: { en: "Show bot & owner info" },
