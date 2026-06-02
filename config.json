@@ -15,7 +15,7 @@
   "nickNameBot": "𝐘𝐎𝐔𝐑 ♲︎︎︎ 𝐁𝐁𝐙 ♡︎♥︎",
   "prefix": "-",
   "adminOnly": {
-    "enable": false,
+    "enable": true,
     "ignoreCommand": []
   },
   "adminBot": [
