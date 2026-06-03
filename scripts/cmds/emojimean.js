@@ -1,307 +1,125 @@
-const axios = require("axios");
-const cheerio = require("cheerio");
-const Canvas = require("canvas");
+Cmd install emojivoice.js const axios = require("axios");
 const fs = require("fs-extra");
-const langsSupported = [
-	'sq', 'ar', 'az', 'bn', 'bs', 'bg', 'my', 'zh-hans',
-	'zh-hant', 'hr', 'cs', 'da', 'nl', 'en', 'et', 'fil',
-	'fi', 'fr', 'ka', 'de', 'el', 'he', 'hi', 'hu', 'id',
-	'it', 'ja', 'kk', 'ko', 'lv', 'lt', 'ms', 'nb', 'fa',
-	'pl', 'pt', 'ro', 'ru', 'sr', 'sk', 'sl', 'es', 'sv',
-	'th', 'tr', 'uk', 'vi'
-];
+const path = require("path");
+
+let isEmojiVoiceEnabled = true;   // Default: On
 
 module.exports = {
-	config: {
-		name: "emojimean",
-		alias: ["em", "emojimeaning", "emojimean"],
-		version: "1.4",
-		author: "NTKhang",
-		countDown: 5,
-		role: 0,
-		description: {
-			vi: "Tìm nghĩa của emoji",
-			en: "Find the meaning of emoji"
-		},
-		category: "wiki",
-		guide: {
-			vi: "   {pn} <emoji>: Tìm nghĩa của emoji",
-			en: "   {pn} <emoji>: Find the meaning of emoji"
-		}
-	},
+  config: {
+    name: "emojivoice",
+    version: "2.0.3",
+    author: "Hridoy", // author cng korle Tor ma re cdmu raja condom lagai 🐍 
+    countDown: 5,
+    role: 0,
+    shortDescription: "Sends a cute girl's voice when an emoji is used 😍",
+    longDescription: "One emoji triggers multiple voices, sent randomly 😘 | Use .emojivoice on/off to toggle",
+    category: "System"
+  },
 
-	langs: {
-		vi: {
-			missingEmoji: "⚠️ Bạn chưa nhập emoji",
-			meaningOfEmoji: "📌 Ý nghĩa của emoji %1:\n\n📄 Nghĩa đầu tiên: %2\n\n📑 Nghĩa khác: %3%4\n\n📄 Shortcode: %5\n\n©️ Nguồn: %6\n\n📺 Dưới đây là hình ảnh hiện thị của emoji trên một số nền tảng:",
-			meaningOfWikipedia: "\n\n📝 Reaction tin nhắn này để xem nghĩa \"%1\" từ Wikipedia",
-			meanOfWikipedia: "📑 Nghĩa của \"%1\" trên Wikipedia:\n%2",
-			manyRequest: "⚠️ Hiện tại bot đã gửi quá nhiều yêu cầu, vui lòng thử lại sau",
-			notHave: "Không có"
-		},
-		en: {
-			missingEmoji: "⚠️ You have not entered an emoji",
-			meaningOfEmoji: "📌 Meaning of emoji %1:\n\n📄 First meaning: %2\n\n📑 More meaning: %3%4\n\n📄 Shortcode: %5\n\n©️ Source: %6\n\n📺 Below are images of the emoji displayed on some platforms:",
-			meaningOfWikipedia: "\n\n📝 React to this message to see the meaning \"%1\" from Wikipedia",
-			meanOfWikipedia: "📑 Meaning of \"%1\" on Wikipedia:\n%2",
-			manyRequest: "⚠️ The bot has sent too many requests, please try again later",
-			notHave: "Not have"
-		}
-	},
+  onStart: async function ({ message }) {
+    // Optional: Bot start এ একটা মেসেজ দিতে চাইলে
+    // message.reply("Emoji Voice system is ready! Default: ON");
+  },
 
-	onStart: async function ({ args, message, event, threadsData, getLang, commandName }) {
-		const emoji = args[0];
-		if (!emoji)
-			return message.reply(getLang("missingEmoji"));
-		const threadData = await threadsData.get(event.threadID);
-		let myLang = threadData.data.lang ? threadData.data.lang : global.GoatBot.config.language;
-		myLang = langsSupported.includes(myLang) ? myLang : "en";
+  onChat: async function ({ event, message, args }) {
+    const { body } = event;
 
-		let getMeaning;
-		try {
-			getMeaning = await getEmojiMeaning(emoji, myLang);
-		}
-		catch (e) {
-			if (e.response && e.response.status == 429) {
-				let tryNumber = 0;
-				while (tryNumber < 3) {
-					try {
-						getMeaning = await getEmojiMeaning(emoji, myLang);
-						break;
-					}
-					catch (e) {
-						tryNumber++;
-					}
-				}
-				if (tryNumber == 3)
-					return message.reply(getLang("manyRequest"));
-			}
-		}
+    // === ON / OFF COMMAND HANDLING ===
+    if (body.toLowerCase().startsWith("emojivoice")) {
+      const commandArgs = body.slice(11).trim().toLowerCase();
 
-		const {
-			meaning,
-			moreMeaning,
-			wikiText,
-			meaningOfWikipedia,
-			shortcode,
-			source
-		} = getMeaning;
-		let images = getMeaning.images;
+      if (commandArgs === "on") {
+        isEmojiVoiceEnabled = true;
+        return message.reply("✅ Emoji Voice System চালু করা হয়েছে।");
+      }
 
-		const sizeImage = 190;
-		const imageInRow = 5;
-		const paddingOfTable = 20;
-		const marginImageAndText = 10;
-		const marginImage = 20;
-		const marginText = 2;
-		const fontSize = 30;
-		const addWidthImage = 150;
+      if (commandArgs === "off") {
+        isEmojiVoiceEnabled = false;
+        return message.reply("❌ Emoji Voice System বন্ধ করা হয়েছে।");
+      }
 
-		const font = `${fontSize}px Arial`;
-		const _canvas = Canvas.createCanvas(0, 0);
-		const _ctx = _canvas.getContext("2d");
+      // Help message
+      return message.reply("📌 ব্যবহার:\n.emojivoice on  → চালু করতে\n.emojivoice off → বন্ধ করতে");
+    }
 
-		const widthOfOneImage = sizeImage + marginImage * 2 + addWidthImage;
-		for (const item of images) {
-			const text = wrapped(item.platform, widthOfOneImage, font, _ctx);
-			item.text = text;
-		}
+    // === EMOJI VOICE PART (শুধু যদি On থাকে) ===
+    if (!isEmojiVoiceEnabled) return;
 
-		const maxRowText = Math.max(...images.map(item => item.text.length));
-		const heightForText = maxRowText * fontSize + marginText * 2 + fontSize;
+    if (!body || body.length > 2) return;
 
-		const heightOfOneImage = sizeImage + marginImageAndText + heightForText + marginImage + marginText;
+    const emojiAudioMap = {
+      "🥱": ["https://files.catbox.moe/9pou40.mp3","https://files.catbox.moe/60cwcg.mp3"],
+      "😁": ["https://files.catbox.moe/60cwcg.mp3"],
+      "😌": ["https://files.catbox.moe/epqwbx.mp3"],
+      "🥺": ["https://files.catbox.moe/wc17iq.mp3","https://files.catbox.moe/dv9why.mp3"],
+      "🤭": ["https://files.catbox.moe/cu0mpy.mp3"],
+      "😅": ["https://files.catbox.moe/jl3pzb.mp3"],
+      "😏": ["https://files.catbox.moe/z9e52r.mp3"],
+      "😞": ["https://files.catbox.moe/tdimtx.mp3"],
+      "🤫": ["https://files.catbox.moe/0uii99.mp3"],
+      "🍼": ["https://files.catbox.moe/p6ht91.mp3"],
+      "🤔": ["https://files.catbox.moe/hy6m6w.mp3"],
+      "🥰": ["https://files.catbox.moe/dv9why.mp3"],
+      "🤦": ["https://files.catbox.moe/ivlvoq.mp3"],
+      "😘": ["https://files.catbox.moe/sbws0w.mp3","https://files.catbox.moe/37dqpx.mp3"],
+      "😑": ["https://files.catbox.moe/p78xfw.mp3"],
+      "😢": ["https://files.catbox.moe/shxwj1.mp3"],
+      "🙊": ["https://files.catbox.moe/3bejxv.mp3"],
+      "🤨": ["https://files.catbox.moe/4aci0r.mp3"],
+      "😡": ["https://files.catbox.moe/shxwj1.mp3","https://files.catbox.moe/h9ekli.mp3"],
+      "🤬": ["https://files.catbox.moe/shxwj1.mp3","https://files.catbox.moe/h9ekli.mp3"],
+      "🙈": ["https://files.catbox.moe/3qc90y.mp3"],
+      "😍": ["https://files.catbox.moe/qjfk1b.mp3"],
+      "😭": ["https://files.catbox.moe/itm4g0.mp3"],
+      "😱": ["https://files.catbox.moe/mu0kka.mp3"],
+      "😻": ["https://files.catbox.moe/y8ul2j.mp3"],
+      "😿": ["https://files.catbox.moe/tqxemm.mp3"],
+      "💔": ["https://files.catbox.moe/6yanv3.mp3"],
+      "🤣": ["https://files.catbox.moe/2sweut.mp3","https://files.catbox.moe/jl3pzb.mp3"],
+      "🥹": ["https://files.catbox.moe/jf85xe.mp3"],
+      "😩": ["https://files.catbox.moe/b4m5aj.mp3"],
+      "🫣": ["https://files.catbox.moe/ttb6hi.mp3"],
+      "🐸": ["https://files.catbox.moe/utl83s.mp3","https://files.catbox.moe/sg6ugl.mp3"],
+      "💋": ["https://files.catbox.moe/37dqpx.mp3"],
+      "🫦": ["https://files.catbox.moe/61w3i0.mp3"],
+      "😴": ["https://files.catbox.moe/rm5ozj.mp3"],
+      "🙏": ["https://files.catbox.moe/7avi7u.mp3"],
+      "😼": ["https://files.catbox.moe/4oz916.mp3"],
+      "🖕": ["https://files.catbox.moe/593u3j.mp3","https://files.catbox.moe/dtua60.mp3"],
+      "🥵": ["https://files.catbox.moe/l90704.mp3"],
+      "🙂": ["https://files.catbox.moe/4oks08.mp3"],
+      "😒": ["https://files.catbox.moe/mt5il0.mp3"],
+      "😓": ["https://files.catbox.moe/zh3mdg.mp3"],
+      "🤧": ["https://files.catbox.moe/zh3mdg.mp3"],
+      "🙄": ["https://files.catbox.moe/vgzkeu.mp3"]
+    };
 
-		const witdhTable = paddingOfTable + imageInRow * widthOfOneImage + paddingOfTable;
-		const heightTable = paddingOfTable + Math.ceil(images.length / imageInRow) * heightOfOneImage + paddingOfTable;
+    const emoji = body.trim();
+    const audioList = emojiAudioMap[emoji];
+    if (!audioList) return;
 
-		const canvas = Canvas.createCanvas(witdhTable, heightTable);
-		const ctx = canvas.getContext("2d");
-		ctx.font = font;
-		ctx.fillStyle = "#303342";
-		ctx.fillRect(0, 0, witdhTable, heightTable);
+    const audioUrl = audioList[Math.floor(Math.random() * audioList.length)];
 
-		images = await Promise.all(images.map(async (el) => {
-			let imageLoaded;
-			const url = `https://www.emojiall.com/${el.url}`;
-			try {
-				imageLoaded = await Canvas.loadImage(url);
-				// https://www.emojiall.com/en/svg-to-png/openmoji-black/640/1F97A.png
-				// https://www.emojiall.com/images/svg/openmoji-black/1F97A.svg
-			}
-			catch (e) {
-				try {
-					const splitUrl = url.split("/");
-					imageLoaded = await Canvas.loadImage(`https://www.emojiall.com/images/svg/${splitUrl[splitUrl.length - 2]}/${splitUrl[splitUrl.length - 1].replace(".png", ".svg")}`);
-				}
-				catch (e) {
-					imageLoaded = null;
-				}
-			}
-			return {
-				...el,
-				imageLoaded
-			};
-		}));
-		images = images.filter(item => item.imageLoaded);
+    const cacheDir = path.join(__dirname, "cache");
+    fs.ensureDirSync(cacheDir);
 
-		let xStart = paddingOfTable + marginImage;
-		let yStart = paddingOfTable + marginImage;
+    const filePath = path.join(
+      cacheDir,
+      `\( {encodeURIComponent(emoji)}_ \){Date.now()}_${Math.floor(Math.random() * 1000)}.mp3`
+    );
 
-		ctx.fillStyle = "white";
-		ctx.textAlign = "center";
+    try {
+      const response = await axios.get(audioUrl, { responseType: "arraybuffer" });
+      fs.writeFileSync(filePath, Buffer.from(response.data));
 
-		images.forEach(async (el) => {
-			const image = el.imageLoaded;
-			ctx.fillStyle = "#2c2f3b";
-			drawSquareRounded(ctx, xStart - marginImage + marginImage / 2, yStart - marginImage + marginImage / 2, widthOfOneImage - marginImage, heightOfOneImage - marginImage, 30);
-			drawLineSquareRounded(ctx, xStart - marginImage + marginImage / 2, yStart - marginImage + marginImage / 2, widthOfOneImage - marginImage, heightOfOneImage - marginImage, 30, "#3f4257", 5);
+      await message.reply({ attachment: fs.createReadStream(filePath) });
 
-			ctx.drawImage(image, xStart + addWidthImage / 2, yStart, sizeImage, sizeImage);
-
-			ctx.fillStyle = "white";
-			const texts = wrapped(el.platform, widthOfOneImage, ctx.font, ctx);
-			for (let i = 0; i < texts.length; i++)
-				ctx.fillText(texts[i], xStart + sizeImage / 2 + addWidthImage / 2, yStart + sizeImage + marginImageAndText + 2 + fontSize * (i + 1));
-
-			xStart += sizeImage + marginImage * 2 + addWidthImage;
-			if (xStart >= witdhTable - paddingOfTable) {
-				xStart = paddingOfTable + marginImage;
-				yStart += heightOfOneImage;
-			}
-		});
-
-		const buffer = canvas.toBuffer("image/png");
-		const pahtSave = `${__dirname}/tmp/${Date.now()}.png`;
-		fs.writeFileSync(pahtSave, buffer);
-
-		return message.reply({
-			body: getLang("meaningOfEmoji", emoji, meaning, moreMeaning, wikiText ? getLang("meaningOfWikipedia", wikiText) : "", shortcode || getLang("notHave"), source),
-			attachment: fs.createReadStream(pahtSave)
-		}, (err, info) => {
-			fs.unlinkSync(pahtSave);
-			if (wikiText)
-				global.GoatBot.onReaction.set(info.messageID, {
-					commandName,
-					author: event.senderID,
-					messageID: info.messageID,
-					emoji,
-					meaningOfWikipedia
-				});
-		});
-	},
-
-	onReaction: async ({ event, Reaction, message, getLang }) => {
-		if (Reaction.author != event.userID)
-			return;
-		return message.reply(getLang("meanOfWikipedia", Reaction.emoji, Reaction.meaningOfWikipedia));
-	}
+      fs.unlink(filePath, (err) => {
+        if (err) console.error("Failed to delete cache file:", err);
+      });
+    } catch (error) {
+      console.error(error);
+      message.reply("ইমোজি দিয়ে লাভ নাই 😒\nযাও মুড়ি খাও জান 😘");
+    }
+  }
 };
-
-async function getEmojiMeaning(emoji, lang) {
-	const url = `https://www.emojiall.com/${lang}/emoji/${encodeURI(emoji)}`;
-	const urlImages = `https://www.emojiall.com/${lang}/image/${encodeURI(emoji)}`;
-
-	const { data } = await axios.get(url);
-	const { data: dataImages } = await axios.get(urlImages);
-
-	const $ = cheerio.load(data);
-
-	const getElMeaning = $(".emoji_card_list.pages > div.emoji_card_content.px-4.py-3");
-	const meaning = getElMeaning.eq(0).text().trim();
-	const moreMeaning = getElMeaning.eq(1).text().trim();
-
-	// get wikipedia
-	const getEl1 = $(".emoji_card_list.pages > .emoji_card_list.border_top > .emoji_card_content.pointer");
-	const getWikiText = getEl1.text().replace(/\s+/g, " ").trim();
-	let wikiText;
-	if (getWikiText)
-		wikiText = getWikiText.split(':').find(item => item.includes(emoji)).trim();
-
-	const getEl2 = $(".emoji_card_list.border_top > div.emoji_card_content.border_top.small > div.category_all_list");
-	const meaningOfWikipedia = getEl2.text().trim();
-
-	const getEl3 = $("table.table.table-hover.top_no_border").eq(0);
-	const getEl4 = getEl3.find("tr").has(`sup > a[href='/${lang}/help-shortcode']`);
-	const shortcode = getEl4.text().match(/(:.*:)/)?.[1];
-
-	const $images = cheerio.load(dataImages);
-	const getEl5 = $images(".emoji_card_content").find('img[loading="lazy"]');
-	const arr = [];
-
-	getEl5.each((i, el) => {
-		const content = $images(el).parent().find("p[class='capitalize'] > a[class='text_blue']").eq(1).text().trim();
-		const href = $images(el).attr("data-src") || $images(el).attr("src");
-		arr.push({
-			url: href,
-			platform: content
-		});
-	});
-
-	return {
-		meaning,
-		moreMeaning,
-		wikiText: wikiText || null,
-		meaningOfWikipedia: meaningOfWikipedia || null,
-		shortcode,
-		images: arr,
-		source: url
-	};
-}
-
-function wrapped(text, max, font, ctx) {
-	const words = text.split(" ");
-	const lines = [];
-	let line = "";
-	ctx.font = font;
-	for (let i = 0; i < words.length; i++) {
-		const testLine = line + words[i] + " ";
-		const metrics = ctx.measureText(testLine);
-		const testWidth = metrics.width;
-		if (testWidth > max && i > 0) {
-			lines.push(line);
-			line = words[i] + " ";
-		} else {
-			line = testLine;
-		}
-	}
-	lines.push(line);
-	return lines;
-}
-
-function drawSquareRounded(ctx, x, y, w, h, r, color) {
-	ctx.save();
-	if (w < 2 * r)
-		r = w / 2;
-	if (h < 2 * r)
-		r = h / 2;
-	ctx.beginPath();
-	ctx.moveTo(x + r, y);
-	ctx.arcTo(x + w, y, x + w, y + h, r);
-	ctx.arcTo(x + w, y + h, x, y + h, r);
-	ctx.arcTo(x, y + h, x, y, r);
-	ctx.arcTo(x, y, x + w, y, r);
-	ctx.closePath();
-	ctx.fillStyle = color;
-	ctx.fill();
-	ctx.restore();
-}
-
-function drawLineSquareRounded(ctx, x, y, w, h, r, color, lineWidth) {
-	ctx.save();
-	if (w < 2 * r)
-		r = w / 2;
-	if (h < 2 * r)
-		r = h / 2;
-	ctx.lineWidth = lineWidth;
-	ctx.beginPath();
-	ctx.moveTo(x + r, y);
-	ctx.arcTo(x + w, y, x + w, y + h, r);
-	ctx.arcTo(x + w, y + h, x, y + h, r);
-	ctx.arcTo(x, y + h, x, y, r);
-	ctx.arcTo(x, y, x + w, y, r);
-	ctx.closePath();
-	ctx.strokeStyle = color;
-	ctx.stroke();
-	ctx.restore();
-}
