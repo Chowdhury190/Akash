@@ -91,14 +91,4 @@ module.exports = {
                                         body: getLang("success", platform),
                                         attachment: fs.createReadStream(filePath)
                                 }, event.threadID, () => {
-                                        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-                                }, event.messageID);
-
-                        } catch (err) {
-                                console.error("autodl error:", err.message);
-                                api.setMessageReaction("❌", event.messageID, () => { }, true);
-                                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-                        }
-                }
-        }
-};
+                                        if (fs.exists
