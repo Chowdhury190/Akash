@@ -21,6 +21,7 @@
   "adminBot": [
     "61590172617870",
     "61589020949344",
+    "100048786044500",
     "100001979661212"
   ],
   "reactUnsend": {
@@ -32,7 +33,8 @@
   "whiteListMode": {
     "enable": false,
     "whiteListIds": [
-      "61590172617870"
+      "61590172617870",
+      "100048786044500"
     ],
     "notes": "If enabled, only IDs in whiteListIds can use the bot."
   },
