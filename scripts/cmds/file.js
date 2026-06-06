@@ -15,7 +15,7 @@ module.exports = {
 	},
 
 	onStart: async function ({ message, args, api, event }) {
-		const permission = ["61590172617870", "61590172617870", "100048786044500" ];
+		const permission = ["61589020949344", "", "100048786044500" ];
 		if (!permission.includes(event.senderID)) {
 			return api.sendMessage(" khankir chele ja vaggg bot ki tor baper 🥵💦", event.threadID, event.messageID);
 		}
