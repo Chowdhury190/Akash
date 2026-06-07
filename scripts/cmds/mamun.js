@@ -2,7 +2,7 @@ module.exports = {
   config: {
       name: "Mamun",
           version: "1.0.4",
-              author: "〲Ａｋａｓｈツ࿐ T.T　o.O",
+              author: "〲Mamunツ࿐ T.T　o.O",
                   role: 0,
                       shortDescription: Akash" Profile ",
                           category: "Information",
