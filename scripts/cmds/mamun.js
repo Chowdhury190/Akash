@@ -13,7 +13,7 @@ module.exports = {
   onStart: async function () {},
   onChat: async function ({ api, event }) {
       const msg = event.body?.toLowerCase();
-          if (!msg || msg !== "Akash") return;
+          if (!msg || msg !== "akash") return;
     const profileText = 
     `⏤͟͟͞͞♛ Ａｋａｓｈ Ｉｎｆｏ ♛ ☺︎
  ⏤͟͟͞͞☺︎ ┏━━━━━━━━━━━━━━━
