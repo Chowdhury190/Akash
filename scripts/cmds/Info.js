@@ -6,7 +6,7 @@ module.exports = {
     name: "info",
     aliases: ["admininfo", "botinfo", "Akash", "ownerinfo"],
     version: "1.4",
-    author: "亗𝐀𝐊𝐀𝐒𝐇 𝐂𝐇𝐎𝐖𝐃𝐇𝐔𝐑𝐘×͜×",
+    author: "亗MA M UN×͜×",
     countDown: 5,
     role: 0,
     shortDescription: { en: "Show bot & owner info" },
@@ -18,11 +18,11 @@ module.exports = {
   onStart: async function ({ message }) {
 
     // OWNER INFO
-    const authorName = "×᷼×ＭＡ☂Ｍ☂ＵＮ☆";
+    const authorName = "亗𝐀𝐊𝐀𝐒𝐇 𝐂𝐇𝐎𝐖𝐃𝐇𝐔𝐑𝐘×͜×☆";
     const ownAge = "19+";
     const messenger = "https://m.me/mamun.8192";
-    const authorFB = "MA M UN Bb'z";
-    const authorNumber = "+8801830981279";
+    const authorFB = "𝐀𝐊𝐀𝐒𝐇 𝐂𝐇𝐎𝐖𝐃𝐇𝐔𝐑𝐘";
+    const authorNumber = "+";
     const Status = "Single";
 
     // SAFE CATBOX VIDEO LINK
