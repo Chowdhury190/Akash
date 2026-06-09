@@ -1,4 +1,4 @@
--cmd install akash.js module.exports = {
+ module.exports = {
   config: {
     name: "akash",
     version: "1.0.4",
