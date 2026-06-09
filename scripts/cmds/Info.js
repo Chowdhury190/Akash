@@ -20,7 +20,7 @@ module.exports = {
     // OWNER INFO
     const authorName = "亗𝐀𝐊𝐀𝐒𝐇 𝐂𝐇𝐎𝐖𝐃𝐇𝐔𝐑𝐘×͜×☆";
     const ownAge = "19+";
-    const messenger = "https://m.me/mamun.8192";
+    const messenger = "https://www.facebook.com/share/17uTdnFcnR/";
     const authorFB = "𝐀𝐊𝐀𝐒𝐇 𝐂𝐇𝐎𝐖𝐃𝐇𝐔𝐑𝐘";
     const authorNumber = "+";
     const Status = "Single";
