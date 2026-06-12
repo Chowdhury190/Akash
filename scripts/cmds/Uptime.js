@@ -4,7 +4,7 @@ module.exports = {
   config: {
     name: "uptime",
     version: "3.0",
-    author: "〲ＡＫＡＳＨツ࿐ T.T　o.O",
+    author: "〲Mamunツ࿐ T.T　o.O",
     countDown: 5,
     role: 0,
     shortDescription: "Pro uptime status",
