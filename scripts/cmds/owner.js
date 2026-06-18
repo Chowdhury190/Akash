@@ -39,7 +39,7 @@ module.exports = {
       fs.mkdirSync(cacheDir, { recursive: true });
     }
 
-    const imgLink = "https://i.imgur.com/rQWMrcH.jpeg";
+    const imgLink = "https://i.imgur.com/3fCioHa.jpeg";
 
     const send = () => {
       try {
