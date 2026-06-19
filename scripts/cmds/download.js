@@ -1,32 +1,80 @@
-module.exports.config = {
-  name: "download",
-  version: "1.0.1",
-  hasPermssion: 2,
-  credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
-  description: "Download files",
-  commandCategory: "System",
-  usages: "download <link> || download <path> <link>",
-  cooldowns: 5
-};
+const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
 
-module.exports.run = async function({ api, event, client, Threads, args }) {
-    const fs = global.nodemodule["fs-extra"], axios = global.nodemodule["axios"], rq = global.nodemodule["request"];
-    
-    if(!args[1]) {
-        var path = __dirname + '';
-        var link = args.slice(0).join("");
+module.exports = {
+  config: {
+    name: "download",
+    version: "1.4",
+    author: "MOHAMMAD AKASH",
+    countDown: 5,
+    role: 0,
+    shortDescription: "Download media from direct link",
+    category: "media",
+    guide: "{pn} <direct-link>"
+  },
+
+  onStart: async function ({ api, event, args }) {
+    const url = args[0];
+
+    if (!url) {
+      return api.sendMessage(
+        "⚠️ Pʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴅɪʀᴇᴄᴛ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ.\n\nE xᴀᴍᴘʟᴇ:\n/download https://example.com/video.mp4",
+        event.threadID,
+        event.messageID
+      );
     }
-    else {
-        var path = __dirname + '/'+args[0];
-        var link = args.slice(1).join("");
-    };
-    var format = rq.get(link);
-    var namefile = format.uri.pathname;
-    var path = path+'/'+(namefile.slice(namefile.lastIndexOf("/")+1));
-    let getimg = (await axios.get(link, { responseType: "arraybuffer" }))
-    .data;
-  fs.writeFileSync(path, Buffer.from(getimg, "utf-8"));
-  
-  return api.sendMessage("Save the file to the folder"+path, event.threadID, event.messageID);
-    
-}
+
+    const supported = [
+      ".mp4", ".mp3",
+      ".jpg", ".jpeg", ".png", ".gif",
+      ".pdf", ".docx", ".txt", ".zip"
+    ];
+
+    const ext = path.extname(url.split("?")[0]).toLowerCase();
+
+    if (!supported.includes(ext)) {
+      return api.sendMessage(
+        "❌ Uɴsᴜᴘᴘᴏʀᴛᴇᴅ ғɪʟᴇ ᴛʏᴘᴇ!\n\nSᴜᴘᴘᴏʀᴛᴇᴅ:\nmp4, mp3, jpg, png, gif, pdf, docx, txt, zip",
+        event.threadID,
+        event.messageID
+      );
+    }
+
+    const fileName = `download${ext}`;
+
+    try {
+      // Loading message (Aʙᴄ Fᴏɴᴛ)
+      const loadingMsg = await api.sendMessage(
+        "⏳ Dᴏᴡɴʟᴏᴀᴅɪɴɢ • Jᴜsᴛ A Mᴏᴍᴇɴᴛ...",
+        event.threadID
+      );
+
+      const res = await axios.get(url, {
+        responseType: "arraybuffer",
+        timeout: 30000
+      });
+
+      fs.writeFileSync(fileName, res.data);
+
+      // Unsend loading message
+      api.unsendMessage(loadingMsg.messageID);
+
+      api.sendMessage(
+        {
+          body: `✅ Dᴏᴡɴʟᴏᴀᴅ Cᴏᴍᴘʟᴇᴛᴇ!\n📥 Fɪʟᴇ: ${fileName}`,
+          attachment: fs.createReadStream(fileName)
+        },
+        event.threadID,
+        () => fs.unlinkSync(fileName)
+      );
+
+    } catch (err) {
+      console.error(err);
+      api.sendMessage(
+        "❌ Dᴏᴡɴʟᴏᴀᴅ ғᴀɪʟᴇᴅ! Tʜᴇ ʟɪɴᴋ ᴍᴀʏ ɴᴏᴛ ʙᴇ ᴅɪʀᴇᴄᴛ.",
+        event.threadID
+      );
+    }
+  }
+};
