@@ -1,80 +1,74 @@
 const axios = require("axios");
 const fs = require("fs");
-const path = require("path");
+const { shortenURL } = global.utils;
+const baseApiUrl = async () => {
+  const base = await axios.get(
+    `https://raw.githubusercontent.com/cyber-ullash/cyber-ullash/refs/heads/main/UllashApi.json`,
+  );
+  return base.data.api;
+};
 
 module.exports = {
   config: {
-    name: "download",
-    version: "1.4",
-    author: "MOHAMMAD AKASH",
-    countDown: 5,
+    name: "autodl",
+    version: "1.0.1",
+    author: "Dipto",
+    countDown: 0,
     role: 0,
-    shortDescription: "Download media from direct link",
+    description: {
+      en: "Auto download video from tiktok, facebook, Instagram, YouTube, and more",
+    },
     category: "media",
-    guide: "{pn} <direct-link>"
+    guide: {
+      en: "[video_link]",
+    },
   },
-
-  onStart: async function ({ api, event, args }) {
-    const url = args[0];
-
-    if (!url) {
-      return api.sendMessage(
-        "⚠️ Pʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴅɪʀᴇᴄᴛ ᴅᴏᴡɴʟᴏᴀᴅ ʟɪɴᴋ.\n\nE xᴀᴍᴘʟᴇ:\n/download https://example.com/video.mp4",
-        event.threadID,
-        event.messageID
-      );
-    }
-
-    const supported = [
-      ".mp4", ".mp3",
-      ".jpg", ".jpeg", ".png", ".gif",
-      ".pdf", ".docx", ".txt", ".zip"
-    ];
-
-    const ext = path.extname(url.split("?")[0]).toLowerCase();
-
-    if (!supported.includes(ext)) {
-      return api.sendMessage(
-        "❌ Uɴsᴜᴘᴘᴏʀᴛᴇᴅ ғɪʟᴇ ᴛʏᴘᴇ!\n\nSᴜᴘᴘᴏʀᴛᴇᴅ:\nmp4, mp3, jpg, png, gif, pdf, docx, txt, zip",
-        event.threadID,
-        event.messageID
-      );
-    }
-
-    const fileName = `download${ext}`;
+  onStart: async function () {},
+  onChat: async function ({ api, event }) {
+    let dipto = event.body ? event.body : "";
 
     try {
-      // Loading message (Aʙᴄ Fᴏɴᴛ)
-      const loadingMsg = await api.sendMessage(
-        "⏳ Dᴏᴡɴʟᴏᴀᴅɪɴɢ • Jᴜsᴛ A Mᴏᴍᴇɴᴛ...",
-        event.threadID
-      );
+      if (
+        dipto.startsWith("https://vt.tiktok.com") ||
+        dipto.startsWith("https://www.tiktok.com/") ||
+        dipto.startsWith("https://www.facebook.com") ||
+        dipto.startsWith("https://www.instagram.com/") ||
+        dipto.startsWith("https://youtu.be/") ||
+        dipto.startsWith("https://youtube.com/") ||
+        dipto.startsWith("https://x.com/") ||
+        dipto.startsWith("https://twitter.com/") ||
+        dipto.startsWith("https://vm.tiktok.com") ||
+        dipto.startsWith("https://fb.watch")
+      ) {
+        api.setMessageReaction("⏳", event.messageID, (err) => {}, true);
 
-      const res = await axios.get(url, {
-        responseType: "arraybuffer",
-        timeout: 30000
-      });
+        const path = __dirname + `/cache/diptoo.mp4`;
 
-      fs.writeFileSync(fileName, res.data);
+        const { data } = await axios.get(
+          `${await baseApiUrl()}/alldl?url=${encodeURIComponent(dipto)}`,
+        );
+        const vid = (
+          await axios.get(data.result, { responseType: "arraybuffer" })
+        ).data;
 
-      // Unsend loading message
-      api.unsendMessage(loadingMsg.messageID);
+        fs.writeFileSync(path, Buffer.from(vid, "utf-8"));
+        const url = await shortenURL(data.result);
+        api.setMessageReaction("✅", event.messageID, (err) => {}, true);
 
-      api.sendMessage(
-        {
-          body: `✅ Dᴏᴡɴʟᴏᴀᴅ Cᴏᴍᴘʟᴇᴛᴇ!\n📥 Fɪʟᴇ: ${fileName}`,
-          attachment: fs.createReadStream(fileName)
-        },
-        event.threadID,
-        () => fs.unlinkSync(fileName)
-      );
+        api.sendMessage(
+          {
+            body: `${data.cp || null}\n✅ | Link: ${url || null}`,
 
-    } catch (err) {
-      console.error(err);
-      api.sendMessage(
-        "❌ Dᴏᴡɴʟᴏᴀᴅ ғᴀɪʟᴇᴅ! Tʜᴇ ʟɪɴᴋ ᴍᴀʏ ɴᴏᴛ ʙᴇ ᴅɪʀᴇᴄᴛ.",
-        event.threadID
-      );
+            attachment: fs.createReadStream(path),
+          },
+          event.threadID,
+          () => fs.unlinkSync(path),
+          event.messageID,
+        );
+      }
+    } catch (e) {
+      api.setMessageReaction("❎", event.messageID, (err) => {}, true);
+      api.sendMessage(e, event.threadID, event.messageID);
     }
-  }
+  },
 };
